@@ -4,12 +4,12 @@
 
 # Save the current directory
 current_dir=$(pwd)
+export SKIP_WASM_BUILD=1
 
-# Define an array of commands to run
 commands=(
-  "SKIP_WASM_BUILD=1 cargo check"
-  "SKIP_WASM_BUILD=1 cargo check --tests"
-  "SKIP_WASM_BUILD=1 cargo clippy --all-targets --all-features --locked --quiet"
+  "cargo check"
+  "cargo check --tests"
+  "cargo clippy --all-targets --all-features --locked --quiet"
   "cargo test"
 )
 
@@ -25,12 +25,11 @@ done
 
 cd /home/dom/Documents/Programming/RustProjects/polkadot-sdk
 
-# Run remaining commands in the current directory
+# Run commands at top level
 commands=(
-  "SKIP_WASM_BUILD=1 cargo check"
-  "SKIP_WASM_BUILD=1 cargo check --tests"
-  # "cargo clippy --all-features --all-targets"
-  "SKIP_WASM_BUILD=1 cargo clippy --all-features --all-targets --locked --workspace"
+  "cargo check"
+  "cargo check --tests"
+  "cargo clippy --all-features --all-targets --locked --workspace"
   # "cargo clippy --all-targets --all-features --locked --workspace --quiet"
   "cargo +nightly fmt"
 )
