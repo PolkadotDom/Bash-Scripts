@@ -43,6 +43,9 @@ for cmd in "${commands[@]}"; do
   fi
 done
 
+#set back
+export SKIP_WASM_BUILD=0
+
 # Check if a number argument is provided
 if [ -n "$1" ]; then
   # Construct the file path using the provided number
