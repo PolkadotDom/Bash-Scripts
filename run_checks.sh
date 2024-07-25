@@ -31,7 +31,6 @@ commands=(
   "cargo check --tests"
   "cargo clippy --all-features --all-targets --locked --workspace"
   # "cargo clippy --all-targets --all-features --locked --workspace --quiet"
-  "cargo +nightly fmt"
 )
 
 for cmd in "${commands[@]}"; do
@@ -43,11 +42,12 @@ for cmd in "${commands[@]}"; do
   fi
 done
 
-#set back
+#set back for unit tests
 export SKIP_WASM_BUILD=0
 
 # Check if a number argument is provided
 if [ -n "$1" ]; then
+  
   # Construct the file path using the provided number
   pr_number=$1
   file_path="/home/dom/Documents/Programming/RustProjects/polkadot-sdk/prdoc/pr_${pr_number}.prdoc"
@@ -61,15 +61,30 @@ if [ -n "$1" ]; then
   # Parse the YAML file and extract the package names with a bump
   packages=$(yq -r '.crates[] | select(.bump != null) | .name' "$file_path")
 
-  # Run cargo test on each package with a bump
   for package in $packages; do
-    echo "Running: cargo test -p $package"
-    cargo test -p $package --quiet
-    if [ $? -ne 0 ]; then
-      echo "Error: Command 'cargo test -p $package' failed."
+    # Find the package location
+    package_path=$(cargo metadata --format-version 1 --no-deps | jq -r ".packages[] | select(.name == \"$package\") | .manifest_path" | xargs dirname)
+    if [ -n "$package_path" ]; then
+      # Go to location
+      cd $package_path
+
+      # Format
+      echo "Formatting package: $package"
+      cargo +nightly fmt
+
+      # Run cargo tests
+      echo "Running: cargo test on package $package"
+      cargo test --quiet
+      if [ $? -ne 0 ]; then
+        echo "Error: Command 'cargo test failed."
+        exit 1
+      fi
+    else
+      echo "Error: Could not find path for package $package."
       exit 1
     fi
   done
+
 else
   echo "No prdoc number provided. Skipping checks."
 fi
