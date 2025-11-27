@@ -1,0 +1,35 @@
+// Try a runtime upgrade (replace wasm file and websocket uri)
+try-runtime \
+--disable-spec-name-check \
+--runtime $WASM_BUILD_DIRECTORY/collectives_westend_runtime.wasm \
+on-runtime-upgrade \
+--disable-spec-version-check --blocktime 12000 --disable-mbm-checks \
+live \
+--uri wss://westend-collectives-rpc.polkadot.io:443
+
+// Build the wasm and place it in the wasm builds directory
+// Replace package name, must call from root, not the local crate
+wasm_build -p collectives-westend-runtime --features try-runtime
+
+// Overall polkadot sdk root check
+cargo clippy --all-targets --all-features --locked --quiet
+
+// Spin up a node
+cargo build --release --locked
+$NODE_NAME --dev
+enter ws://localhost:9944 in polkadot js
+
+// Test new fellowship runtime
+build node from polkadot-sdk (using correct branch that fellowship runtimes are currently against)
+build the chain spec for the wasm you want
+run with the custom chain spec using ./$NODE_NAME --chain ./$CHAIN_SPEC_NAME.json --dev
+
+so it turns out you don't actually have to compile the wasm, as that'll be redundant because the chain spec
+generator will do it as well. The wasm it uses is built into it's executable
+
+the chain spec generator
+cd fellowship-runtimes/chain-spec-generator
+cargo run --release --features polkadot -- polkadot-dev > /path/to/your/wanted/dir/polkadot-dev.json
+
+go to
+https://polkadot.js.org/apps/?rpc=ws%3A%2F%2Flocalhost%3A9944#/accounts
