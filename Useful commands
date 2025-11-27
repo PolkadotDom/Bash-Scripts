@@ -19,6 +19,16 @@ cargo build --release --locked
 $NODE_NAME --dev
 enter ws://localhost:9944 in polkadot js
 
+// Run your benchmarks
+// Build a runtime (that has your pallet)
+wasm_build -p 'package-name' --features runtime-benchmarks
+// Run from the pallets directory
+frame-omni-bencher v1 benchmark pallet \ 
+--runtime $WASM_BUILD_DIRECTORY/_.wasm \
+--pallet "pallet_example" \
+--extrinsic "" \
+--output src/weights.rs
+
 // Test new fellowship runtime
 build node from polkadot-sdk (using correct branch that fellowship runtimes are currently against)
 build the chain spec for the wasm you want
