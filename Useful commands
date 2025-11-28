@@ -1,9 +1,15 @@
+// To find websocket endpoints -
+// Go to polkadot.js and look at the url or open the console
+
 // Try a runtime upgrade (replace wasm file and websocket uri)
+// Build wasm with try-runtime flag first
+wasm_build -p collectives-westend-runtime --features try-runtime
+// Then run upgrades
 try-runtime \
 --disable-spec-name-check \
 --runtime $WASM_BUILD_DIRECTORY/collectives_westend_runtime.wasm \
 on-runtime-upgrade \
---disable-spec-version-check --blocktime 12000 --disable-mbm-checks \
+--disable-spec-version-check --blocktime 6000 --disable-mbm-checks \
 live \
 --uri wss://westend-collectives-rpc.polkadot.io:443
 
