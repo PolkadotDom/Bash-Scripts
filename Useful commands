@@ -4,7 +4,7 @@
 // Try a runtime upgrade (replace wasm file and websocket uri)
 // Build wasm with try-runtime flag first
 wasm_build -p collectives-westend-runtime --features try-runtime
-// Then run upgrades
+// Then run upgrades on live uri
 try-runtime \
 --disable-spec-name-check \
 --runtime $WASM_BUILD_DIRECTORY/collectives_westend_runtime.wasm \
@@ -12,6 +12,15 @@ on-runtime-upgrade \
 --disable-spec-version-check --blocktime 6000 --disable-mbm-checks \
 live \
 --uri wss://westend-collectives-rpc.polkadot.io:443
+// or on snapshot created earlier
+try-runtime \
+    --disable-spec-name-check \
+    --runtime "$WASM_BUILD_DIRECTORY/collectives_westend_runtime.wasm" \
+    on-runtime-upgrade \
+    --disable-spec-version-check \
+    --blocktime 6000 \
+    --disable-mbm-checks \
+    snap --snapshot-path "$SNAPSHOT_DIRECTORY/my-chain.snap"
 
 // Build the wasm and place it in the wasm builds directory
 // Replace package name, must call from root, not the local crate
@@ -49,3 +58,11 @@ cargo run --release --features polkadot -- polkadot-dev > /path/to/your/wanted/d
 
 go to
 https://polkadot.js.org/apps/?rpc=ws%3A%2F%2Flocalhost%3A9944#/accounts
+
+// Create a snapshot
+try-runtime \
+--runtime existing \
+create-snapshot \
+$SNAPSHOT_DIRECTORY/my-chain.snap \
+--uri wss://westend-asset-hub-rpc.polkadot.io \
+--pallet ConvictionVoting
