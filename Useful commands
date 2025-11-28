@@ -15,11 +15,10 @@ live \
 // or on snapshot created earlier
 try-runtime \
     --disable-spec-name-check \
-    --runtime "$WASM_BUILD_DIRECTORY/collectives_westend_runtime.wasm" \
+    --runtime "$WASM_BUILD_DIRECTORY/asset_hub_westend_runtime.wasm" \
     on-runtime-upgrade \
     --disable-spec-version-check \
     --blocktime 6000 \
-    --disable-mbm-checks \
     snap --snapshot-path "$SNAPSHOT_DIRECTORY/my-chain.snap"
 
 // Build the wasm and place it in the wasm builds directory
@@ -65,4 +64,17 @@ try-runtime \
 create-snapshot \
 $SNAPSHOT_DIRECTORY/my-chain.snap \
 --uri wss://westend-asset-hub-rpc.polkadot.io \
---pallet ConvictionVoting
+--pallet ConvictionVoting \
+--pallet Aura \
+--pallet Session \
+--pallet Authorship \
+--pallet ParachainInfo \
+--pallet ParachainSystem
+
+// Need for try-runtime upgrade
+--pallet Aura \
+--pallet Session \
+--pallet Authorship \
+(and if parachain)
+--pallet ParachainInfo 
+--pallet ParachainSystem
