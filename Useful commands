@@ -78,3 +78,9 @@ $SNAPSHOT_DIRECTORY/my-chain.snap \
 (and if parachain)
 --pallet ParachainInfo 
 --pallet ParachainSystem
+
+// For historic block info
+Can use polkadot.js, though some rpcs aren't running archive
+
+// For all your hashing needs
+pop hash
