@@ -20,15 +20,19 @@ current=0
 for user in $authors; do
   current=$((current+1))
   
-  printf "Checking (%d/%d): %s ... \r" "$current" "$count" "$user"
+  # Skip bots to save time and reduce noise
+  if [[ "$user" == *"bot"* ]] || [[ "$user" == *"Bot"* ]]; then continue; fi
+
+  # FIX: \033[K clears everything to the right of the cursor
+  printf "\rChecking (%d/%d): %s ... \033[K" "$current" "$count" "$user"
   sleep 2
 
-  # FIX: Added '2>/dev/null' to silence errors from banned/suspended users
   prev_count=$(gh search prs "created:<$since" --repo "$repo" --author "$user" --json number --jq 'length' 2>/dev/null)
   
   if [[ "$prev_count" =~ ^[0-9]+$ ]]; then
     if [ "$prev_count" -eq 0 ]; then
-      printf "\033[2K\r" 
+      # Clear line fully before printing the match
+      printf "\r\033[K" 
       echo "★ NEW CONTRIBUTOR: $user"
     fi
   fi
