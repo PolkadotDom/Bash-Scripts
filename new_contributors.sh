@@ -3,7 +3,6 @@ since="2025-11-01"
 
 echo "Fetching potential new contributors (excluding org members)..."
 
-# 1. Get authors (filtering out MEMBER/OWNER)
 authors=$(gh search prs --repo $repo "updated:>=$since" \
   --limit 1000 \
   --json author,createdAt,closedAt,state,authorAssociation \
@@ -24,9 +23,8 @@ for user in $authors; do
   printf "Checking (%d/%d): %s ... \r" "$current" "$count" "$user"
   sleep 2
 
-  # FIX: Use explicit flags (--repo, --author) instead of a query string
-  # Only the date filter remains as a positional search argument
-  prev_count=$(gh search prs "created:<$since" --repo "$repo" --author "$user" --json number --jq 'length')
+  # FIX: Added '2>/dev/null' to silence errors from banned/suspended users
+  prev_count=$(gh search prs "created:<$since" --repo "$repo" --author "$user" --json number --jq 'length' 2>/dev/null)
   
   if [[ "$prev_count" =~ ^[0-9]+$ ]]; then
     if [ "$prev_count" -eq 0 ]; then
